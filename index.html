@@ -529,8 +529,80 @@ $details = $user->achievementStatus(new CreatedTenComments());
 
                     <section id="line3" class="section">
 
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Chains <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
 
+                        <h4 id="line3_1">Introduction</h4>
+                        <p>When you have multiple Achievements that are tracking the same stats, you might have a huge
+                            block of code in a specific part of your code. For example, if you have multiple achievements
+                            for making 10, 50, 100, 200, 500 and 1000 comments, you would need to add a single line for each
+                            one of these Achievement classes.
+                        </p>
+                        <p>An <strong>Achievement Chain</strong> will help you solve this issue.</p>
+                        <hr>
+                        <h4 id="line3_2">Creating a Chain</h4>
+                        <p>An <code>AchievementChain</code> is a helper class that defines a list of Achievements that track
+                            the same stats.
+                        </p>
+                        <p style="padding-bottom: 0;">Similar to Achievements, you can either create a new AchievementChain class manually, or use the
+                            helper Artisan command <code>php artisan make:achievement_chain</code> in order to create a new AchievementChain.</p>
+                        <pre>php artisan make:achievement_chain TrackComments</pre>
+                        <p style="padding-bottom: 0;">This command will put a fresh AchievementChain in your
+                            <code>app/Achievements</code> directory with only a method defined: <code>chain()</code>.</p>
+                        <hr>
+                        <h4 id="line3_3">Handling a Chain</h4>
+                        <p>After creating the AchievementChain class, you should change the <code>chain()</code> method.<br />
+                            This method should return all achievements that belong to that chain, <strong>in the same
+                                order as they should be unlocked.</strong></p>
+                        <p style="padding-bottom: 0;">Using the original example - if you have Achievements that track 10, 50, 100,
+                            200, 500 and 1000 comments, you might create your chain similar to this:</p>
+                        <pre class="brush: php; highlight:[11]">
+namespace App\Achievements\Chains;
 
+use App\Achievements\FirstPost;
+use App\Achievements\TenPosts;
+use App\Achievements\FiftyPosts;
+
+use Gstt\Achievements\AchievementChain;
+
+class CommentChain extends AchievementChain
+{
+    public function chain()
+    {
+        return [
+            new Comments10(), new Comments50(), new Comments100(),
+            new Comments200(), new Comments500(), new Comments1000()
+        ];
+    }
+}
+                        </pre>
+                        <p style="padding-bottom: 0;">After declaring this class, you can track it in the same way you would if it were an Achievement -
+                        you can use all progress methods directly to the chain.</p>
+                        <pre class="brush:php; highlight:[4,16]">
+use App\Http\Controller;
+use App\Http\Requests\CreateCommentRequest;
+use App\Comment;
+use App\Achievements\Chains\CommentChain;
+
+class CommentsController extends Controller
+{
+	public function create(CreateCommentRequest $request)
+	{
+		$user = Auth::user();
+
+		$comment = new Comment();
+		$comment->fill($request->all());
+		$user->comments()->save($comment);
+
+        $user->addProgress(new CommentChain(), 1);
+
+		...
+                        </pre>
                     </section>
                     <!-- end section -->
 
@@ -543,7 +615,7 @@ $details = $user->achievementStatus(new CreatedTenComments());
 
                     <section id="line5" class="section">
 
-                        -->
+
 
                     </section>
                     <!-- end section -->
@@ -632,7 +704,7 @@ class UserMadeAPost extends Achievement
                             </li>
                         </ul>
                         <p>For more details on the usage of <code>Achievement</code>, refer to the
-                            <a href="line2_1">Achievements - Introduction</a> part of this documentation.</p>
+                            <a href="#line2_1">Achievements - Introduction</a> part of this documentation.</p>
                         <hr>
                         <h4 id="line6_4">AchievementDetail</h4>
                         <p>An <strong>AchievementDetail</strong> is an Eloquent Model that is a direct representation
@@ -687,7 +759,7 @@ class PostChain extends AchievementChain
 }
                         </pre>
                         <p>For more details on the usage of <code>Chain</code>, refer to the
-                            <a href="line4_1">Chains - Introduction</a> part of this documentation.</p>
+                            <a href="#line3_1">Chains - Introduction</a> part of this documentation.</p>
                     </section>
                     <!-- end section -->
 
