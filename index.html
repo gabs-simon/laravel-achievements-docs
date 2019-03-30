@@ -41,7 +41,7 @@
 </head>
 
 <body>
-
+<a href="https://github.com/gstt/laravel-achievements" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
     <div id="wrapper">
 
         <div class="container">
@@ -52,7 +52,7 @@
                     <div class="col-md-12">
                         <div class="big-title text-center">
                             <h1>Laravel Achievements</h1>
-                            <p class="lead">Documentation and Reference / Version 1.2</p>
+                            <p class="lead">Documentation and Reference / Version 1.0</p>
                         </div>
                         <!-- end title -->
                     </div>
@@ -87,7 +87,7 @@
                                     <li><a href="#line2_2">Registering an Achiever</a></li>
                                     <li><a href="#line2_3">Creating a new Achievement</a></li>
                                     <li><a href="#line2_4">Unlocking an Achievement</a></li>
-                                    <li><a href="#line2_5">Progressive Achievements</a></li>
+                                    <li><a href="#line2_5">Achievement Progression</a></li>
                                     <li><a href="#line2_6">Retrieving from DB</a></li>
                                 </ul>
                             </li>
@@ -128,9 +128,7 @@
                                     <li><a href="#line6_6">Chain</a></li>
                                 </ul>
                             </li>
-                            <li><a href="#line7">Contributing</a></li>
-                            <li><a href="#line8">Changelog</a></li>
-                            <li><a href="#line9">Copyright and License</a></li>
+                            <li><a href="#line7">Copyright and License</a></li>
                         </ul>
                     </nav >
                 </div>
@@ -346,7 +344,7 @@ class CommentsController extends Controller
                             </ul>
                         </div>
                         <hr>
-                        <h4 id="line2_5">Progressive Achievements</h4>
+                        <h4 id="line2_5">Achievement Progression</h4>
                         <p>Sometimes you don't actually want to unlock and Achievement right away; instead, your Users
                         should slowly gain points until they have enough to unlock the Achievement.<br /> For example, let's
                         create an Achievement for when our user creates ten posts on our website.</p>
@@ -607,14 +605,80 @@ class CommentsController extends Controller
                     <!-- end section -->
 
                     <section id="line4" class="section">
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Event Handling <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
 
+                        <h4 id="line4_1">Introduction</h4>
+                        <p>Laravel implements an efficient Event system that allows you to trigger and listen to events as they happen.</p>
+                        <p>Laravel Achievements is fully compatible with the Event system and provides a few events that can be listened to.</p>
+                        <hr>
+                        <h4 id="line4_2">Available Events</h4>
+                        <ul>
+                            <li><code>Gstt\Achievements\Event\Progress</code>: Triggers whenever an Achiever has their progress points in an Achievement changed.</li>
+                            <li><code>Gstt\Achievements\Event\Unlocked</code>: Triggers whenever an Achiever has unlocked an Achievement.</li>
+                        </ul>
+                        <hr>
+                        <h4 id="line4_3">Listening to Events</h4>
+                        <p>Details on how to listen to those events are explained on <a href="https://laravel.com/docs/master/events" target="_blank">Laravel's Event documentation</a>.</p>
+                        <hr>
+                        <h4 id="line4_4">Specific Achievement Events</h4>
+                        <p>The event listeners mentioned above triggers for all Achievements. If you would like to add an event listener for only a specific Achievement, you can do so by implementing the methods <code>whenUnlocked()</code> or <code>whenProgress</code> on the Achievement class.</p>
+                        <pre class="brush:php; highlight:[23,32]">
+use Gstt\Achievements\Achievement;
 
+class UserMade50Posts extends Achievement
+{
+    /*
+     * The achievement name
+     */
+    public $name = "50 Posts Created";
+
+    /*
+     * A small description for the achievement
+     */
+    public $description = "Wow! You have already created 50 posts!";
+
+    /*
+     * The amount of "points" this user need to obtain in order to complete this achievement
+     */
+    public $points = 50;
+
+    /*
+     * Triggers whenever an Achiever makes progress on this achievement
+    */
+    public function whenProgress($progress)
+    {
+
+    }
+
+    /*
+     * Triggers whenever an Achiever unlocks this achievement
+    */
+    public function whenUnlocked($progress)
+    {
+
+    }
+}
+                        </pre>
 
                     </section>
                     <!-- end section -->
 
                     <section id="line5" class="section">
 
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Frontend Display <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                            <p>Coming soon.</p>
+                        </div>
+                        <!-- end row -->
 
 
                     </section>
@@ -765,20 +829,18 @@ class PostChain extends AchievementChain
 
                     <section id="line7" class="section">
 
-
-
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line8" class="section">
-
-
-
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line9" class="section">
-
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Copyright and License <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <p>Laravel Achievements is open-source software licensed under the MIT License.</p>
+                            <hr />
+                            <p>COPYRIGHT 2017-2019 Gabriel Simonetti</p>
+                            <p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+                            <p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+                            <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+                        </div>
+                        <!-- end row -->
 
 
                     </section>
